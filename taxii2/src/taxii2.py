@@ -144,7 +144,6 @@ class Taxii2Connector:
         server = Server(self.discovery_url, user=self.username, password=self.password)
         for root in server.api_roots:
             if coll_title == '*':
-                #TODO: not sure root.name is right syntax
                 self.poll_entire_root(root.title)
             else:
                 try:
@@ -183,11 +182,12 @@ class Taxii2Connector:
 
         self.helper.log_info(f'Sending Bundle to server with {len(bundle["objects"])} objects')
         try:
-            with open(f"{bundle['id']}.json", 'w') as bfile:
-                json.dump(bundle, bfile, indent=2)
-            # self.helper.send_stix2_bundle(
-            #     json.dumps(bundle), update=self.update_existing_data,
-            # )
+            # with open(f"{bundle['id']}.json", 'w') as bfile:
+            #     json.dump(bundle, bfile, indent=2)
+            self.helper.send_stix2_bundle(
+                json.dumps(bundle), update=self.update_existing_data,
+            )
+
         except Exception as e:
             self.helper.log_error(str(e))
 
@@ -207,6 +207,3 @@ if __name__ == "__main__":
         connector.run()
     except Exception as e:
         raise(e)
-        # print(e)
-        # time.sleep(10)
-        # exit(0)
