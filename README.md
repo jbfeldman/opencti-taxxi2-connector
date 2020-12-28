@@ -21,7 +21,7 @@ There are a number of configuration options, which are set either in `docker-com
 ### Collections and API roots
 TAXII 2.0 introduced a new concept into the TAXII standard called an "API Root." API Roots are logical groupings of TAXII Collections and Channels that allow for better organization and federated access. More information can be found in the [TAXII2 standard](https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.pdf)
 
-Unfortunately, the introduction of API Roots makes it more complicated to configure which Collections to poll from. To solve that issue, this connector uses dot notation to specify which collection(s) the user wants to poll, using the format `<API ROOT.<Collection Name>`. So if you wanted to poll the `Enterprise ATT&CK` and `Mobile ATT&CK` collections in the API Root `stix` in MITRE's free TAXII2 server, your config variable would like
+Unfortunately, the introduction of API Roots makes it more complicated to configure which Collections to poll from. To solve that issue, this connector uses dot notation to specify which collection(s) the user wants to poll, using the format `<API Root>.<Collection Name>`. So if you wanted to poll the `Enterprise ATT&CK` and `Mobile ATT&CK` collections in the API Root `stix` in MITRE's free TAXII2 server, your config variable would like
 
 `stix.Enterprise ATT&CK,stix.Mobile ATT&CK`
 
@@ -37,7 +37,7 @@ Build a Docker Image using the provided `Dockerfile`. Example: `docker build . -
 ### Manual/VM Deployment
 Create a file `config.yml` based off the provided `config.yml.sample`. Replace the configuration variables (especially the "ChangeMe" variables) with the appropriate configurations for you environment. Install the required python dependencies (preferably in a virtual environment) with `pip3 install -r requirements.txt` Then, run the `python3 rf_feeds.py` command to start the connector
 ## Usage
-After Installation, the connector should require minimal interaction to use, and should update automatically at the hourly interval specified in your `docker-compose.yml` or `config.yml`. However, if you would like to force an immediate poll of the TAXII Server, navigiate to Data management -> Connectors and Workers in the OpenCTI platform. Find the "Recorded Future Risk Lists" connector, and click on the refresh button to reset the connector's state and force a new poll of the Collections. Please note that this will be considered a "first" poll and thus will use the `TAXII2_INITIAL_HISTORY`
+After Installation, the connector should require minimal interaction to use, and should update automatically at the hourly interval specified in your `docker-compose.yml` or `config.yml`. However, if you would like to force an immediate poll of the TAXII Server, navigiate to Data management -> Connectors and Workers in the OpenCTI platform. Find the "Recorded Future Risk Lists" connector, and click on the refresh button to reset the connector's state and force a new poll of the Collections. Please note that this will be considered a "first" poll and thus will use the `TAXII2_INITIAL_HISTORY` variable
 
 ## Verification
 To verify the connector is working, you can navigate to Data->Data Curation in the OpenCTI platform and see the new imported data there. For troubleshooting or additional verification, please view the Connector logs.
