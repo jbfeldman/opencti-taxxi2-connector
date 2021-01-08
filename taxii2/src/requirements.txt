@@ -4,7 +4,7 @@ chardet==3.0.4
 datefinder==0.7.1
 idna==2.10
 pika==1.1.0
-pycti==4.0.1
+pycti==4.0.5
 python-dateutil==2.8.1
 python-magic==0.4.18
 pytz==2020.4
