@@ -3,19 +3,15 @@
 import os
 import time
 import json
-
 from datetime import datetime, timedelta
 import yaml
 from requests.exceptions import HTTPError
-
 from taxii2client.v20 import (
     Server,
     ApiRoot
     )
 from taxii2client.exceptions import TAXIIServiceException
-
 from pycti import OpenCTIConnectorHelper, get_config_variable
-
 
 
 class Taxii2Connector:
@@ -23,7 +19,8 @@ class Taxii2Connector:
     def __init__(self):
         """Read in config variables"""
 
-        config_file_path = os.path.dirname(os.path.abspath(__file__)) + "/config.yml"
+        config_file_path = os.path.dirname(os.path.abspath(__file__))
+        config_file_path += '/config.yml'
         config = (
             yaml.load(open(config_file_path), Loader=yaml.FullLoader)
             if os.path.isfile(config_file_path)
@@ -58,7 +55,8 @@ class Taxii2Connector:
         ).split(',')
 
         self.initial_history = get_config_variable(
-            'TAXII2_INITIAL_HISTORY', ["taxii2", "initial_history"], config, True
+            'TAXII2_INITIAL_HISTORY', ["taxii2", "initial_history"], config,
+            True
         )
 
         self.per_request = get_config_variable(
@@ -74,8 +72,6 @@ class Taxii2Connector:
             ["connector", "update_existing_data"],
             config,
         )
-        #In a crisis, smash glass and uncomment this line of code
-        #self.helper.config['uri'] = self.helper.config['uri'].replace('rabbitmq', '172.19.0.6')
 
     @staticmethod
     def _init_collection_table(colls):
@@ -84,7 +80,8 @@ class Taxii2Connector:
         and the value is the list of Collections to read
 
         Args:
-            colls (str): a comma delimited list of API roots and Collections to Poll
+            colls (str): a comma delimited list of API
+                         roots and Collections to Poll
         Returns:
             A dictionary with [str, Set], where the Key is the API root
             and the value is the list of Collections to be polled
@@ -98,7 +95,6 @@ class Taxii2Connector:
                 table[root] = {coll}
         print(table)
         return table
-
 
     def get_interval(self):
         """Converts interval hours to seconds"""
@@ -133,13 +129,16 @@ class Taxii2Connector:
                         self.poll_entire_root(root_title)
                     else:
                         url = os.path.join(self.server_url, root_title)
-                        root = ApiRoot(url, user=self.username, password=self.password)
+                        root = ApiRoot(url,
+                                       user=self.username,
+                                       password=self.password)
                         self.poll(root, coll_title)
                 except (TAXIIServiceException, HTTPError) as err:
                     self.helper.log_error('Error connecting to TAXII server')
                     self.helper.log_error(err)
                     continue
-            self.helper.log_info(f'Run Complete. Sleeping until next run in {self.interval} hours')
+            self.helper.log_info(f'Run Complete. Sleeping until next run in '
+                                 f'{self.interval} hours')
             self.helper.set_state({"last_run": timestamp})
             time.sleep(self.get_interval())
 
@@ -157,7 +156,8 @@ class Taxii2Connector:
                 try:
                     self.poll(root.title, coll_title)
                 except TAXIIServiceException as err:
-                    msg = f'Error trying to poll Collection {coll_title} in API Root {root.title}. Skipping'
+                    msg = (f'Error trying to poll Collection {coll_title} '
+                           f'in API Root {root.title}. Skipping')
                     self.helper.log_error(msg)
                     self.helper.log_error(err)
 
@@ -179,10 +179,10 @@ class Taxii2Connector:
             try:
                 self.poll(root, coll.title)
             except TAXIIServiceException as err:
-                msg = f'Error trying to poll Collection {coll.title} in API Root {root.title}. Skipping'
+                msg = (f'Error trying to poll Collection {coll.title} '
+                       f'in API Root {root.title}. Skipping')
                 self.helper.log_error(msg)
                 self.helper.log_error(err)
-
 
     def poll(self, root, coll_title):
         """
@@ -193,7 +193,7 @@ class Taxii2Connector:
         """
         coll = self._get_collection(root, coll_title)
 
-        #TODO: maybe function me out
+        # TODO: maybe function me out
         filters = {}
         if self.first_run:
             lookback = self.initial_history or None
@@ -202,7 +202,8 @@ class Taxii2Connector:
         if lookback:
             added_after = datetime.now() - timedelta(hours=lookback)
             filters['added_after'] = added_after
-        self.helper.log_info(f'Polling Collection {coll_title} in API Root {root.title}')
+        self.helper.log_info(f'Polling Collection {coll_title} '
+                             f'in API Root {root.title}')
         self.send_to_server(coll.get_objects(**filters))
 
     def send_to_server(self, bundle):
@@ -212,7 +213,8 @@ class Taxii2Connector:
             bundle (list(dict)): STIX2 bundle represented as a list of dicts
         """
 
-        self.helper.log_info(f'Sending Bundle to server with {len(bundle["objects"])} objects')
+        self.helper.log_info(f'Sending Bundle to server with '
+                             f'{len(bundle["objects"])} objects')
         try:
             self.helper.send_stix2_bundle(
                 json.dumps(bundle), update=self.update_existing_data,
@@ -236,7 +238,6 @@ class Taxii2Connector:
                 return coll
         msg = f'Collection {coll_title} does not exist in API root {root.title}'
         raise TAXIIServiceException(msg)
-
 
 
 if __name__ == "__main__":
