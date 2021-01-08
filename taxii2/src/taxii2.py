@@ -82,6 +82,12 @@ class Taxii2Connector:
         """
         Creates a table of string:Set where the key is the API root
         and the value is the list of Collections to read
+
+        Args:
+            colls (str): a comma delimited list of API roots and Collections to Poll
+        Returns:
+            A dictionary with [str, Set], where the Key is the API root
+            and the value is the list of Collections to be polled
         """
         table = {}
         for c in colls.split(','):
@@ -138,7 +144,11 @@ class Taxii2Connector:
             time.sleep(self.get_interval())
 
     def poll_all_roots(self, coll_title):
-        """Polls all API roots for the specified collections"""
+        """
+        Polls all API roots for the specified collections
+        Args:
+            coll_title (str): The Name of a Collection
+        """
         server = Server(self.discovery_url, user=self.username, password=self.password)
         for root in server.api_roots:
             if coll_title == '*':
@@ -152,7 +162,11 @@ class Taxii2Connector:
                     self.helper.log_error(err)
 
     def poll_entire_root(self, root_title, conn=None):
-        """Polls all Collections in a given API Root"""
+        """
+        Polls all Collections in a given API Root
+        Args:
+            root_title (str): The Name of an API Root to poll
+        """
 
         url = os.path.join(self.server_url, root_title)
         try:
@@ -171,7 +185,12 @@ class Taxii2Connector:
 
 
     def poll(self, root, coll_title):
-        """Polls a specified collection in a specified API root"""
+        """
+        Polls a specified collection in a specified API root
+        Args:
+            root (taxii2.v2*.ApiRoot): The API Root to poll
+            coll_title (str): The name of the collection to poll
+        """
         coll = self._get_collection(root, coll_title)
 
         #TODO: maybe function me out
@@ -187,7 +206,11 @@ class Taxii2Connector:
         self.send_to_server(coll.get_objects(**filters))
 
     def send_to_server(self, bundle):
-        """Sends a STIX2 bundle to OpenCTI Server"""
+        """
+        Sends a STIX2 bundle to OpenCTI Server
+        Args:
+            bundle (list(dict)): STIX2 bundle represented as a list of dicts
+        """
 
         self.helper.log_info(f'Sending Bundle to server with {len(bundle["objects"])} objects')
         try:
@@ -199,7 +222,15 @@ class Taxii2Connector:
             self.helper.log_error(str(e))
 
     def _get_collection(self, root, coll_title):
-        """Returns a COllection object, given an API Root and a collection name"""
+        """
+        Returns a Collection object, given an API Root and a collection name
+        Args:
+            root (taxii2.v2*.ApiRoot): The API Root to search through
+            coll_title (str): The Name of the target Collections
+        Returns:
+            The taxii2.v2*.Collection object with the name `coll_title`
+
+        """
         for coll in root.collections:
             if coll.title == coll_title:
                 return coll
