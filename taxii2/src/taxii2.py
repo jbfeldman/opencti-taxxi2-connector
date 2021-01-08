@@ -31,9 +31,6 @@ class Taxii2Connector:
         )
         self.helper = OpenCTIConnectorHelper(config)
         # Extra config
-        self.create_report = get_config_variable(
-            "TAXII2_FUTURE_CREATE_REPORTS", ["feed", "create_reports"], config
-        )
         self.username = get_config_variable(
             'TAXII2_USERNAME', ["taxii2", "username"], config
         )
@@ -79,6 +76,7 @@ class Taxii2Connector:
         )
         #In a crisis, smash glass and uncomment this line of code
         #self.helper.config['uri'] = self.helper.config['uri'].replace('rabbitmq', '172.19.0.6')
+
     @staticmethod
     def _init_collection_table(colls):
         """
@@ -151,17 +149,28 @@ class Taxii2Connector:
                 except TAXIIServiceException as err:
                     msg = f'Error trying to poll Collection {coll_title} in API Root {root.title}. Skipping'
                     self.helper.log_error(msg)
-                    self.helper.log_error(e)
+                    self.helper.log_error(err)
 
     def poll_entire_root(self, root_title, conn=None):
         """Polls all Collections in a given API Root"""
 
         url = os.path.join(self.server_url, root_title)
-        root = ApiRoot(url, user=self.username, password=self.password, conn=conn)
+        try:
+            root = ApiRoot(url, user=self.username, password=self.password, conn=conn)
+        except (TAXIIServiceException, HTTPError) as err:
+            self.helper.log_error('Error trying to connec to API root {root_title}')
+            self.helper.log_error(err)
+            return
         for coll in root.collections:
-            self.poll(root, coll.title)
+            try:
+                self.poll(root, coll.title)
+            except TAXIIServiceException as err:
+                msg = f'Error trying to poll Collection {coll.title} in API Root {root.title}. Skipping'
+                self.helper.log_error(msg)
+                self.helper.log_error(err)
 
-    def poll(self, root, coll_title, conn=None):
+
+    def poll(self, root, coll_title):
         """Polls a specified collection in a specified API root"""
         coll = self._get_collection(root, coll_title)
 
@@ -182,8 +191,6 @@ class Taxii2Connector:
 
         self.helper.log_info(f'Sending Bundle to server with {len(bundle["objects"])} objects')
         try:
-            # with open(f"{bundle['id']}.json", 'w') as bfile:
-            #     json.dump(bundle, bfile, indent=2)
             self.helper.send_stix2_bundle(
                 json.dumps(bundle), update=self.update_existing_data,
             )
