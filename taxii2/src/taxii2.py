@@ -29,13 +29,13 @@ class Taxii2Connector:
         self.helper = OpenCTIConnectorHelper(config)
         # Extra config
         self.username = get_config_variable(
-            'TAXII2_USERNAME', ["taxii2", "username"], config
+            'TAXII2_USERNAME', ['taxii2', 'username'], config
         )
         self.password = get_config_variable(
-            'TAXII2_PASSWORD', ["taxii2", "password"], config
+            'TAXII2_PASSWORD', ['taxii2', 'password'], config
         )
         self.is_v21 = get_config_variable(
-            'TAXII2_V21', ["taxii2", "v2.1"], config
+            'TAXII2_V21', ['taxii2', 'v2.1'], config
         )
         if self.is_v21:
             global Server, ApiRoot
@@ -45,31 +45,31 @@ class Taxii2Connector:
                 )
 
         self.server_url = get_config_variable(
-            "TAXII2_SERVER_URL", ["taxii2", "server_url"], config
+            'TAXII2_SERVER_URL', ['taxii2', 'server_url'], config
         )
         discovery_tail = 'taxii/' if not self.is_v21 else 'taxii2/'
         self.discovery_url = os.path.join(self.server_url, discovery_tail)
 
         self.collections = get_config_variable(
-            'TAXII2_COLLECTIONS', ["taxii2", "collections"], config
+            'TAXII2_COLLECTIONS', ['taxii2', 'collections'], config
         ).split(',')
 
         self.initial_history = get_config_variable(
-            'TAXII2_INITIAL_HISTORY', ["taxii2", "initial_history"], config,
+            'TAXII2_INITIAL_HISTORY', ['taxii2', 'initial_history'], config,
             True
         )
 
         self.per_request = get_config_variable(
-            'TAXII2_PER_REQUEST', ["taxii2", "per_request"], config, True
+            'TAXII2_PER_REQUEST', ['taxii2', 'per_request'], config, True
         )
 
         self.interval = get_config_variable(
-            "TAXII2_INTERVAl", ["taxii2", "interval"], config, True
+            'TAXII2_INTERVAl', ['taxii2', 'interval'], config, True
         )
 
         self.update_existing_data = get_config_variable(
-            "CONNECTOR_UPDATE_EXISTING_DATA",
-            ["connector", "update_existing_data"],
+            'CONNECTOR_UPDATE_EXISTING_DATA',
+            ['connector', 'update_existing_data'],
             config,
         )
 
