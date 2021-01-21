@@ -1,5 +1,5 @@
 opencti:
-  url: 'http://opencti-ps-01.recfut.net:4000'
+  url: 'http://opencti:4000'
   token: 'CHANGEME'
 
 connector:
