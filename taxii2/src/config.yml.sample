@@ -1,31 +1,21 @@
 opencti:
-  url: 'http://localhost:4000'
-  token: 'df8635b1-39b5-41c2-8873-2f19b0e6ca8c'
+  url: 'http://opencti-ps-01.recfut.net:4000'
+  token: 'CHANGEME'
 
 connector:
-  id: 'fd9795b3-01af-4604-ac64-32eea45a4bcf'
+  id: 'CHANGEME'
   type: 'EXTERNAL_IMPORT'
-  name: 'Recorded Future Risk Lists' # Required
+  name: 'TAXII2_Import' # Required
   scope: 'ipv4-addr,ipv6-addr,vulnerability,domain,url,file-sha256,file-md5,file-sha1'
   confidence_level: 5
   update_existing_data: True
   log_level: 'info'
 
 taxii2:
-  server_url: 'https://cti-taxii.mitre.org/taxii/' # Required
-  create_reports: True # Required, create report each collection
-  username: ChangeMe
-  password: ChangeMe
-  api_roots:
-  - name: stix
-    collections:
-    - one
-    - two
-  - name: second API root
-    collections:
-    - cyber
-    - supercyber
+  server_url: 'CHANGEME' # Required
+  username: CHANGEME
+  password: CHANGEME
+  v2.1: True
+  collections: '*.*'
   initial_history: 24 #required, in hours
-  per_request: 1000 # Number of bundles imported at a time: on higher performance machines, set the number higher
-
   interval: 1000 # Required, in hours
