@@ -87,8 +87,8 @@ class Taxii2Connector:
             and the value is the list of Collections to be polled
         """
         table = {}
-        for c in colls.split(','):
-            root, coll = c.split('.')
+        for col in colls.split(','):
+            root, coll = col.split('.')
             if root in table:
                 table[root].add(coll)
             else:
@@ -193,7 +193,6 @@ class Taxii2Connector:
         """
         coll = self._get_collection(root, coll_title)
 
-        # TODO: maybe function me out
         filters = {}
         if self.first_run:
             lookback = self.initial_history or None
@@ -242,7 +241,7 @@ class Taxii2Connector:
 
 if __name__ == "__main__":
     try:
-        connector = Taxii2Connector()
-        connector.run()
+        CONNECTOR = Taxii2Connector()
+        CONNECTOR.run()
     except Exception as e:
         raise(e)
