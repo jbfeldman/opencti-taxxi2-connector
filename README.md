@@ -1,3 +1,7 @@
+# WARNING
+As of February 10 2021, this Connector has been merged with the main OpenCTI Connectors repository at https://github.com/OpenCTI-Platform/connectors. This repository will no longer be maintained, and you should treat OpenCTI's repo as the source of truth. I'll use my fork at https://github.com/jbfeldman/connectors for active development but stable releases will all be on OpenCTI's repo
+
+
 # OpenCTI TAXII2 Connector
 *Contact jonahbfeldman@gmail.com with questions*
 ## Description
